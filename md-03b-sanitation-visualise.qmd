@@ -1,7 +1,7 @@
 ---
 title: "Data transformation with dplyr"
 subtitle: "And make a plot"
-author: ""
+author: "Kasandra Poague"
 format:
   html:
     embed-resources: true
@@ -44,10 +44,10 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 1.  Run all code chunks above.
 2.  Use the `glimpse()` function to get an overview of the data set.
-3.  How many variables are in the data set?
+3.  How many variables are in the data set? **Answer**: 8
 
 ```{r}
-
+glimpse(sanitation)
 ```
 
 ## Task 2
@@ -56,6 +56,7 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+sanitation |> count(varname_short, varname_long)
 ```
 
 ## Task 3
@@ -70,6 +71,9 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+sanitation_brazil<- sanitation |> filter(name == "Brazil", year == 2000 | year == 2020,varname_short != "san_sm")
+
+glimpse(sanitation_brazil)
 ```
 
 ## Task 4
@@ -78,6 +82,7 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+sanitation_brazil |> count(year)
 ```
 
 ## Task 5
@@ -101,20 +106,30 @@ geom_text(aes(label = round(percent, 1)),
 
 ```{r}
 
+sanitation_brazil |> ggplot (mapping = aes(x = residence, 
+                                           y = percent,
+                                           color =varname_long)) +
+  geom_col()+
+  facet_wrap(~year) + 
+  scale_fill_colorblind() +
+  geom_text(aes(label = round(percent, 1)), 
+          position = position_stack(vjust = 0.5),
+          size = 3,
+          color = "white") 
 ```
 
 ## Task 6
 
 If you haven't worked with JMP indicators before, the following questions will be challenging to answer.
 
-1.  Look at the plot that you created. What do you notice about the order of the bars / order of the legend?
-2.  What would you want to change?
-3.  Why did we remove "safely managed sanitation services" from the data set in Task 3?
+1.  Look at the plot that you created. What do you notice about the order of the bars / order of the legend? **Answer:** in the x-label it goes from national (total), and then splited into rural and urban. In the y-label it goes from the worst category (unimproved sanitation facilities + no sanitation facilities) to the best one (basic services)
+2.  What would you want to change? **Answer**: the colour of the bars and the labels in white, they dont make sense.
+3.  Why did we remove "safely managed sanitation services" from the data set in Task 3? Answer: because is not part of the service ladder, not comparable to the other categories
 
 ## Task 7
 
 1.  Run the code in the code chunk below.
-2.  What do you observe when you look at the code and plot?
+2.  What do you observe when you look at the code and plot? **Answer:** at first it looks like the percent and count of safely managed sanitation services are higher than everything else, but then you pay attention to the x-axis you see that is actually the lowest (count goes from 0 to 19).
 
 ```{r}
 
